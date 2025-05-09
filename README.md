@@ -86,7 +86,7 @@ In the created dataset, we have a target variable as well as a title and a text 
 We can observe in Figure 1 and Figure 2, the count of words per article and the length of articles. As the distribution of the fake news and real news seems different, we can draw the hypothesis that those variables are very interesting, and that we could predict the veracity due to this. We will investigate it and compare models that also use the content of the news, and not only the metadata. 
 
 
-![Figure1&2](img/Figure1&2)
+![Figure1&2](img/Figure1&2.png)
 
 
 Figure 1: Distribution of Length		   Figure 2: Distribution of word count
