@@ -138,11 +138,11 @@ This clustering task is an exploration idea in which we want to understand is we
 If we use an elbow technique over the number of clusters to decide how many of them to use, we obtain 5 clusters. And plotting the obtained clusters over the PCA1 and PCA2 we get the following images.
 
 
-
+![FigureCluster1](img/FigureCluster1.png)
 
 This is interesting if we compare it to the the distribution of False and TRUE news over PCA1 and PCA2.
 
-
+![FigureCluster2](img/FigureCluster2.png)
 
 
 In the second step of the analysis, we transformed the preprocessed texts into numerical vector representations to enable machine learning models to process and analyze them. We explored a wide range of vectorization strategies, starting with traditional statistical methods and progressing toward modern embedding-based models.
