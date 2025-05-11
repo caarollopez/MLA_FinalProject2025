@@ -153,7 +153,25 @@ Beyond classical models, we also explored word embeddings using Word2Vec and Glo
 
 
 
-Dashboard
+## 5. Dashboard
+In order visualize and interact with the machine learning models we have created, we developed an interactive dashboard using Dash. The dashboard is a platform where we have integrated the three core functionalities of the project: classification of news as REAL or FAKE, clustering analysis, and real news recommendations following the detection of fake news.
+
+**Dashboard Functionalities**
+
+The dashboard is structured around tabs that facilitate navigation through it:
+
+* Classify & Suggest: Users can input news articles (either full text or title only). When submitted, the dashboard classifies the article as FAKE or REAL using the optimized model. A visual horizontal bar indicates the prediction confidence (green for real news, red for fake news). Additionally, this functionality provides the top related articles within the same cluster, along with the most similar REAL news. This way we provide users some context in the prediction and verifying information.
+
+* Cluster Finder: Allows users to input a news article to identify the cluster it belongs to. This helps in understanding the broader context or sentiment associated with the news, such as political inclination or thematic grouping. Users receive immediate feedback regarding the cluster assignment, enabling exploration of patterns and trends.
+
+* True News by Topic: Presents news articles categorized by topics generated from the LDA analysis. This facilitates topic-driven exploration, providing users direct access to reliable articles organized under distinct themes identified by the LDA model.
+
+* Fake News by Topic: The same as the previous functionality but specifically for fake news articles by topic. This is particularly useful for observing patterns in misinformation and identifying recurring deceptive themes.
+
+* Explore by Cluster: Allows exploration of articles grouped by their respective clusters. The news are shown in a table where articles are labeled as REAL or FAKE, allowing detailed scrutiny of cluster compositions and the detection of underlying tendencies such as political bias or populist language.
+
+
+
 
 
 
