@@ -18,10 +18,10 @@
 
 
 
-Carolina López De La Madriz 100475216
-Álvaro Martín Ruiz   
-Emma Rodriguez Hervas 
-Jaime Salafranca Pardo 100475216
+- Carolina López De La Madriz 100475095
+- Álvaro Martín Ruiz   
+- Emma Rodriguez Hervas 
+- Jaime Salafranca Pardo 100475216
 
 
 ### Table of Contents
@@ -248,7 +248,7 @@ The dashboard is structured around tabs that facilitate navigation through it:
 
 Here is the video link: https://youtu.be/5UZiXaJ0hBU
 
-## 6.Conclusions
+## 6. Conclusions
 
 This project explored whether the authenticity of news articles can be predicted using only their textual content. We found that even simple features like title length or word count show strong signals, and that titles alone can offer reasonable predictive power. However, combining title and full-text embeddings (using GloVe and Doc2Vec) produced the most accurate results.
 Through classification, clustering, and topic modeling, we gained insights into the structure and patterns of real and fake news. Our KMeans clustering showed that stylistic and thematic differences align with veracity. Finally, the implementation of a recommendation system, based on clustering, that suggests reliable articles when fake ones are detected adds value for users.
