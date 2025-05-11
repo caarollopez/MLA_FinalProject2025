@@ -71,13 +71,17 @@ These features are integrated into a dashboard interface, allowing users to inpu
 Is it necessary to have the whole text or context of the news to predict the veracity of the news? Can we just predict the veracity with the length of the news or the length of the title? Is the title enough to predict the veracity of the news, or the type of news? The answers to those questions are the principal target of the work and not only the prediction itself. It is known that having a powerful model that can predict the veracity of the news is a great tool, and it is achievable, nevertheless, there are several computational and energetic issues with large models, which can consume a lot of resources. It is for that reason that checking how different methods work is an interesting approach, as reducing the amount of data, parameters, and weights is very relevant for the good implementation in large-scale models.
 
 
+
 #### Data and preprocessing
+
 This part of the report explains how the data has been obtained and preprocessed to achieve a clean dataset useful for the different tasks. The observation and exploratory analysis held, and the decisions taken for the data preprocessing, are also explained in this section.
 
 #### 2.2.  Where does the dataset come from
 
 The extraction of news is a critical point in the analysis of fake and real news. This and difficulties faced will be explained, as well as how the news can be obtained for more precise and future work. In an ideal case, the dataset could be created from recent news and applied to a certain sector. There are several API’s that work very well to obtain news with title and text. 
-	For the scope of this project, we have used the GoogleNews API and an APINews for extracting some news. The problem with these APIs is the amount of news that can be scraped per day and person. In the free version, this amount is limited to less than a thousand. As there is no financial support to construct the dataset, we have used the code to understand how the data would be scraped, but we have used a dataset available on Kaggle, which replicates the results we would have. To build the dataset, we have used a FAKE news dataset with source publication date, title, and text. A similar dataset with REAL news was merged, creating a binary target value.
+
+
+For the scope of this project, we have used the GoogleNews API and an APINews for extracting some news. The problem with these APIs is the amount of news that can be scraped per day and person. In the free version, this amount is limited to less than a thousand. As there is no financial support to construct the dataset, we have used the code to understand how the data would be scraped, but we have used a dataset available on Kaggle, which replicates the results we would have. To build the dataset, we have used a FAKE news dataset with source publication date, title, and text. A similar dataset with REAL news was merged, creating a binary target value.
 
 #### 2.3.  Preprocessing and Exploratory Data Analysis
 
@@ -96,56 +100,92 @@ The rest of the preprocessing of the data consists of only checking if all the n
 
 #### Natural Language Processing
 
-Once the dataset has been preprocessed, we may start to do the Natural Language Processing, This step is critical as it will determine the accuracy of our future model, but also the computing times and costs. To do the Natural Language Processing, a pipeline will be defined, and some different techniques will be tested and contrasted to make the decision. The base skeleton of the pipeline will be inspired by the notebooks used in class and as homework. Even if all the steps all the pipeline will be executed together, they will be divided for explanation purposes in this report.
+Once the dataset has been preprocessed, we may start to do the Natural Language Processing, This step is critical as it will determine the accuracy of our future model, but also the computing times and costs. To do the Natural Language Processing, a pipeline will be defined, and some different techniques will be tested and contrasted to make the decision. The base skeleton of the pipeline will be inspired by the notebooks used in class and as homework. Even if all the steps of the pipeline will be executed together, they will be divided for explanation purposes in this report.
 
 ## 3.1. Step 1: Text Processing
 
 In our text processing pipeline, we will first remove the HTML structure and convert it to text using BeautifulSoup. The raw text is then parsed with the lxml parser to remove any embedded HTML tags, preserving only the visible textual content. Then we will extract the URL. This is a critical decision because some fake news could have url to possibly fraudulent or virus-infected web pages, which could be of great help for deciding whether the news is false or true. Nevertheless, we have decided to delete them as we want the text just to be the content of it and not metadata such as links or pictures. When reading news, the links are usually not visible but inserted in words, which makes them ‘invisible’ to readers.  Moreover, using the same library, we will recreate all the lost contractions by placing “ ‘ “ where there should be one.
 Then the library contractions are used to remove and fix the contraction. This is a good technique usually used to improve text processing. The NLP function, which is the en_core_web_sm from Spacy, is used, which performs tokenization, part-of-speech tagging, and lemmatization. Tokens are reduced to their base forms (lemmas), converted to lowercase, and filtered to exclude stop words, punctuation, and non-alphabetic tokens. A second lemmatization pass is applied using the WordNet Lemmatizer (wnl), which can offer improved normalization based on WordNet’s lexical database. A final filtering step removes any remaining stop words defined in a custom or standard stopword list.
 
-Even if the Spacy function already provides the necessary preprocessing, it is interesting to redo some steps to verify that no stop words are added. This pipeline will be applied separately to the Title and the rest of the text, this will be like that for the whole project, as the content of the title and the one in the text is very different, and we do not want to merge them. Once we have the Text processing, we can start the Text Vectorization.
+Even if the Spacy function already provides the necessary preprocessing, it is interesting to redo some steps to verify that no stop words are added. This pipeline will be applied separately to the Title and the rest of the text; this will be like that for the whole project, as the content of the title and the one in the text is very different, and we do not want to merge them. Once we have the Text processing, we can start the Text Vectorization.
 
-After this first Pipeline, we introduced several additional improvements. First, we performed named entity recognition (NER) during preprocessing using SpaCy to identify and optionally retain key named entities such as individuals, organizations, and geopolitical locations, which could enhance thematic analysis. We also applied bigram and trigram detection using Gensim’s Phrases model to capture multi-word expressions like "climate change" or "white house", which are semantically richer than their individual components. In addition, we tested language detection and filtering to remove non-English documents and ensure consistency across the corpus.
+After this first Pipeline, we introduced several additional improvements. First, we performed named entity recognition (NER) during preprocessing using SpaCy to identify and optionally retain key named entities such as individuals, organizations, and geopolitical locations, which could enhance thematic analysis. We also applied bigram and trigram detection using Gensim’s Phrases model to capture multi-word expressions like "climate change" or "white house", which are semantically richer than their components. In addition, we tested language detection and filtering to remove non-English documents and ensure consistency across the corpus.
+
 
 
 ## 3.2. Step 2: Text Vectorization
 
-For the text vectorization, we have explored several techniques, including BoW and TFIDF. Initially, we built a dictionary from the processed text using the Gensim library. During dictionary construction, we removed extremely common words that appeared in more than 70% of the documents, as these offered limited discriminative power. At the other end of the spectrum, we also filtered out rare words that occurred in fewer than five documents, which tend to introduce noise. With this refined vocabulary, we computed Bag-of-Words (BoW) vectors that represented the raw frequency of each term in each document. We also calculated TF-IDF (Term Frequency-Inverse Document Frequency) vectors, which adjust term frequencies based on how uniquely they are distributed across the corpus. These two classical representations were compared both visually and quantitatively.
-In addition to these techniques, we implemented Doc2Vec, which learns fixed-length embeddings for entire documents rather than individual words. The model was trained on our corpus and compared with averaged Word2Vec and GloVe embeddings in terms of topic separation and clustering performance. Doc2Vec was particularly useful for capturing document-level semantics in a unified framework.
-To further expand our analysis, we tested Non-negative Matrix Factorization (NMF) as an alternative topic modeling method, which decomposes TF-IDF vectors into interpretable topic components. We also experimented with BERTopic and Top2Vec, two recent topic modeling techniques that combine transformer-based embeddings (e.g., BERT) with clustering algorithms like HDBSCAN and dimensionality reduction via UMAP. These methods were especially promising in identifying semantically coherent topics from embedding spaces, often outperforming traditional LDA in both interpretability and coherence.
-We visualized the resulting document vectors and topic assignments using t-SNE and UMAP to reduce the data to two or three dimensions. These visualizations allowed us to observe topic clusters, overlaps, and outliers, providing valuable insights into the structure of the dataset. In some cases, HDBSCAN was applied to discover dense regions of documents that naturally clustered around a common theme, further validating the quality of the vector representations.
-Each vectorization strategy was assessed qualitatively (in terms of interpretability and topic coherence) and quantitatively (using coherence scores, silhouette coefficients, and classification performance). The comparison between methods allowed us to identify the most effective representation for thematic analysis in this corpus.
-How are we comparing the methods? We are computing the similarity between all the documents of the corpus. What do we expect, for clustering we want to have the lowest similarity average between documents while for regression we want a large similarity for same class elements and a low one for different class elements. 
-Based on that we will select the GloVe embeding for text and Doc2Vec for Titles while we will select BoW or TFIDF for a LDA analysis.
-![coherence_metrics](img/coherence_metrics.png)
-![vectorization_ploted](img/vectorization_ploted.png)
-![lda_bad](img/lda_bad.png)
-![lda_title](img/lda_title.png)
+For the text vectorization, we have explored several techniques, including BoW and TFIDF. During the exploration, we test several techniques and use plots and metrics to understand which will be the most appropriate one for the rest of the work. For this exploration work, we reduce the size of the dataset to 1000 observations. Once we have an idea of the results, we can do it for the whole dataset.
+
+Initially, we built a dictionary from the processed text using the Gensim library. During dictionary construction, we removed extremely common words that appeared in more than 70% of the documents, as these offered limited discriminative power.
+
+
+At the other end of the spectrum, we also filtered out rare words that occurred in fewer than five documents, which tend to introduce noise. With this refined vocabulary, we computed Bag-of-Words (BoW) vectors that represented the raw frequency of each term in each document. We also calculated TF-IDF (Term Frequency-Inverse Document Frequency) vectors, which adjust term frequencies based on how uniquely they are distributed across the corpus. These two classical representations were compared both visually and quantitatively. Nevertheless, we already know that these techniques are not widely used in diffraction of other techniques such as FastText, Doc2Vec and GloVe.
+
+In Figure 3 and in Figure 4, we can see the effect of erasing the more typical words.
+<img src="img/worcloud1.png" width="500"/>     <img src="img/wordcloud2.png" width="500"/>
+
+Figure3: WordCloud Before extracting common words			Figure4: WordCloud after extracting common words
+
+That is why we implemented Doc2Vec. Doc2Vec is an extension of Word2Vec that generates dense, fixed-length vectors representing entire documents. It considers word context and document-level semantics by training embeddings jointly with document identifiers. We trained separate models for titles and texts using Gensim's Doc2Vec, and inferred document embeddings, which we store in doc2vec_text_df and doc2vec_title_df. We also used a pretrained GloVe model, which is a pretrained word embedding model that captures semantic similarity by factorizing a word co-occurrence matrix. We average the GloVe vectors of words in each document to obtain a dense representation. We use the glove-wiki-gigaword-50 pretrained model from Gensim’s API to vectorize both titles and texts. 
+
+Then we computed LDA. In this case, we had to compare the titles approach and the text approach. Comparing the Coherence metric for a number of topics and for a corpus made with BoW or TFIDF.  Obtaining the following results. Where we observe a very good coherence for 12 topics Figure 5. Nevertheless as seen in Figure 6, we must say that the topics have all a very little representativity while one topic had a big one. The eleven remaining topics where all very closed to each other. That is why we decided in this case to take 2 topics. Nevertheless for the titles the 12 topics where very interesting. 
+
+<img src="img/coherence_metrics.png" width="500"/>                     	<img src="img/lda_bad.png" width="500"/>   
+Figure 5: Coherence metrics							                                          Figure 6: LDA not selected
+
+For titles we obtained the following topic representation  Figure 7, we can observe a more interesting separation between topics.
+
+
+<img src="img/lda_title.png" width="500"/>  
+
+
+Moreover we also compared Non-Negative Factorization, NMF is a linear-algebra-based technique for topic modeling that decomposes the TF-IDF matrix into document-topic and topic-word matrices. Unlike LDA, NMF does not assume a generative model but can yield more coherent topics in some cases. We applied NMF using sklearn to extract interpretable topics from the TF-IDF matrix. We also found interesting topics. We used a BERT based sentence transformer, BERTopic combines transformer embeddings (like BERT) with clustering algorithms and topic reduction to create interpretable topics. It captures rich semantic and contextual relationships between words, outperforming traditional methods in many real-world settings. We applied BERTopic to analyze and visualize meaningful topics in the news corpus.
+
+ ![vectorization_ploted](img/vectorization_ploted.png)
+ Figure 8: Visualization of the vectorisation techniques
+
+Comparing the GloVe and BERT models, we can see that the FAKE and REAL observations are separable, so this means that we can find a good model to approximate them.
+Finally, we compare using the cosine similarity between the news to understand which vectorization techniques to use for classification. We compute the similarities intra REAL and intra FAKE as well as between groups, trying to find a high REAL and FAKE intra similarity and a low extra similarity. That is why we decided to use doc2vec for text and GloVe for the title.
+
 ![vectorization](img/vectorization.png)
+Figure 9: Selection of vectorization technique
 
 ## 3.Machine Learning
+
 Once the natural Processing is realized, our Machine Learning work and analysis can start, as previously mentioned, the idea is first to realize a classification by selecting different variables and testing several models. Then we will use clustering to see if we can create groups of news and understand this clustering. This could be interesting to understand if we can detect populist news or just topic-related news. In this case, the results we are looking for are not as topic-related as our LDA model already does well, but rather trying to detect some tendencies of speech in news.
 Finally, the recommended systems has for objective to detect similarities between real and fake news and recommended in case of detecting that a new iis fake, the 2 most similar Real news, This is interesting as it not only destroys the propagation of Fake news but also directly changes the mindset of the reader and in a quick period it can introduce the real point of view in to the readers mind.
 
 
+
 4.1. Classification task: Fake News Detection
 
-In this classification task, our objective is to optimize the accuracy of the classification while minimizing the computational cost and time. It is, of course, interesting to say that the more interesting metrics in this case are the recall, as we want to detect all the Fake news, even if we classify as fake the True news. Nevertheless, other metrics such as f1 score are also very relevant. That is why we will compare with the ROC-AUC score. All the scores will be displayed in a table at the end of the section.
+In this classification task, our primary objective is to maximize the accuracy of fake news detection while keeping computational complexity and training time as low as possible. However, given the nature of the problem, certain evaluation metrics are more informative than overall accuracy. Specifically, recall is a key metric of interest, since our goal is to identify all instances of fake news, even at the cost of misclassifying some real news as fake. In other words, we prioritize minimizing false negatives, which would allow fake news to go undetected. Nevertheless, to balance between precision and recall, we will also consider the F1-score, and for a more comprehensive evaluation of classifier performance, we will compare models using the ROC-AUC score. All metrics will be summarized and presented in a comparative table at the end of this section.
 
-Our first model and benchmark is creating a Linear regression that uses the Length of the title in words or characters, for detecting the veracity of the news. Then, a model will be created using only the title and not the text. Finally, a third model will be built using the content of the text only. Exploring the results of those three models will enable us to combine the necessary variables to create the definitive model. Moreover, several Machine learning techniques such as Random Forest, SVM, and Neural Networks will be used.
+To establish a baseline, our first model is a simple linear regression classifier that uses basic structural features such as the length of the news title, measured both in terms of word count and character count. This model, although naive, provides a lightweight benchmark with minimal computational cost and allows us to assess whether superficial cues alone carry predictive signal.
+
+Next, we advance to models that leverage textual embeddings. First, we construct a classifier that uses only the title of the article, which is transformed into a vector representation using pre-trained word embeddings such as GloVe. This approach captures semantic relationships and contextual meaning within the title, offering richer information than simple length features. We then build a separate model using only the full body of the article, which provides more comprehensive context and detail. While this can significantly improve predictive power, it also increases computational demands due to the greater input size and complexity of the embedding space.
+
+Finally, to develop a more robust solution, we explore the combination of both title and content embeddings to train more sophisticated classifiers. We apply a range of machine learning algorithms, including Random Forests, which are well-suited for handling nonlinear relationships and feature importance; Support Vector Classifier (SVC), known for their strong performance on high-dimensional text data; and Neural Networks, which are particularly effective when working with dense embedding vectors and complex patterns.
+
+By systematically comparing these models, both in terms of performance metrics and resource requirements, we aim to identify the most effective and efficient strategy for fake news detection.
+
+<img src="img/vectorization.png" width="500"/>
+Figure10
 
 | Benchmark     | Title LR | Title RF | Title SVM | Title Neural | All LR | All RF | All SVM | All Neural |
 |---------------|----------|----------|-----------|--------------|--------|--------|---------|------------|
 | 0.89          | 0.89     | 0.92     | 0.94      | 0.96         | 0.94   | 0.95   | 0.96    | 0.98       |
 
-![conf_model1](img/conf_model1.png)
-![conf_model2](img/conf_model2.png)
-![conf_model3](img/conf_model3.png)
 
-As seen in the table, our final decision is to take the SVM models for both only title prediction and also title and text prediction. The decision frontier is pretty clear in the following graphs.
 
-![svc1](img/svc1.png)
-![svc2](img/svc2.png)
+  <img src="img/conf_model1.png" width="500"/>  <img src="img/conf_model2.png" width="500"/>   <img src="img/conf_model3.png" width="500"/> 
+
+                                Figure 10: Models tested for regression
+
+As seen in the table and computing times, our final decision is to take the SVM models for both only title prediction and also title and text prediction. The decision frontier is pretty clear in the following graphs.
+
+![svc1](img/svc1.png)           ![svc2](img/svc2.png)
 
 4.2. Clustering: Types of News 
 
