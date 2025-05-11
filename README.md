@@ -207,21 +207,10 @@ As seen in the table and computing times, our final decision is to take the SVM 
 
 This clustering task is an exploration idea in which we want to understand is we can detect some tendencies in the news, a clustering in function of the topic is not the main objective for us, but more a sentiment clustering which could be able to detect Right wing, Neutral, or Left Wing influenced news. This could also be interesting if found, as for a reader it could be interesting to have recommended news similar to the one that he is reading, but from the opposite political spectrum.
 
-If we use an elbow technique over the number of clusters to decide how many of them to use, we obtain 5 clusters. And plotting the obtained clusters over the PCA1 and PCA2 we get the following images.
-
-
-![FigureCluster1](img/FigureCluster1.png)
-
-This is interesting if we compare it to the the distribution of False and TRUE news over PCA1 and PCA2.
+At first, it was interesting to use PCA and plot a representation of the embedding in a 2-dimension space.
 
 ![FigureCluster2](img/FigureCluster2.png)
 
-
-In the second step of the analysis, we transformed the preprocessed texts into numerical vector representations to enable machine learning models to process and analyze them. We explored a wide range of vectorization strategies, starting with traditional statistical methods and progressing toward modern embedding-based models.
-
-Using both BoW and TF-IDF representations, we trained Latent Dirichlet Allocation (LDA) models to uncover latent thematic structures within the corpus. To determine the optimal number of topics, we employed coherence scoring using the c_v metric. We tested a range of topic counts, typically from 5 to 50, and selected the number of topics that maximized coherence. While LDA is traditionally applied using BoW vectors, we also experimented with training LDA using TF-IDF representations, as recent literature suggests this may improve the semantic clarity of topics in some cases.
-
-Beyond classical models, we also explored word embeddings using Word2Vec and GloVe, both of which generate dense vector representations for individual words. These embeddings were either pre-trained (e.g., on Google News or Common Crawl) or trained on our own corpus. To obtain document-level vectors, we tested multiple aggregation methods. The simplest was to average the word vectors of each document. However, we also applied TF-IDF weighted averaging, which places greater emphasis on informative words. In both cases, we applied Principal Component Analysis (PCA) or Singular Value Decomposition (SVD) to reduce the dimensionality of the resulting vectors and suppress noise. These steps aimed to produce document embeddings that preserved meaningful semantic structure while being computationally efficient.
 
 After vectorizing out corpus with GloVe, we tried several unsupervised algorithms to see which, if any, discover coherent grouping using three different datasets: only news' titles, only texts, or both, combined. First of all, we perform Elbow Method and Silhouette Analysis in order to find the optimal number of clusters. For the first method, all three variants show a steadily decreasing inertia as k grows from 2 to 10, with no sharp elbow, suggesting that there is no single dominant cluster count. However, the Silhouette score peak at k = 2 for the three datasets, but are low. 
 
