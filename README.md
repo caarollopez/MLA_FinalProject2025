@@ -117,8 +117,11 @@ We visualized the resulting document vectors and topic assignments using t-SNE a
 Each vectorization strategy was assessed qualitatively (in terms of interpretability and topic coherence) and quantitatively (using coherence scores, silhouette coefficients, and classification performance). The comparison between methods allowed us to identify the most effective representation for thematic analysis in this corpus.
 How are we comparing the methods? We are computing the similarity between all the documents of the corpus. What do we expect, for clustering we want to have the lowest similarity average between documents while for regression we want a large similarity for same class elements and a low one for different class elements. 
 Based on that we will select the GloVe embeding for text and Doc2Vec for Titles while we will select BoW or TFIDF for a LDA analysis.
-
-
+![coherence_metrics](img/coherence_metrics.png)
+![vectorization_ploted](img/vectorization_ploted.png)
+![lda_bad](img/lda_bad.png)
+![lda_title](img/lda_title.png)
+![vectorization](img/vectorization.png)
 
 ## 3.Machine Learning
 Once the natural Processing is realized, our Machine Learning work and analysis can start, as previously mentioned, the idea is first to realize a classification by selecting different variables and testing several models. Then we will use clustering to see if we can create groups of news and understand this clustering. This could be interesting to understand if we can detect populist news or just topic-related news. In this case, the results we are looking for are not as topic-related as our LDA model already does well, but rather trying to detect some tendencies of speech in news.
@@ -135,8 +138,14 @@ Our first model and benchmark is creating a Linear regression that uses the Leng
 |---------------|----------|----------|-----------|--------------|--------|--------|---------|------------|
 | 0.89          | 0.89     | 0.92     | 0.94      | 0.96         | 0.94   | 0.95   | 0.96    | 0.98       |
 
+![conf_model1](img/conf_model1.png)
+![conf_model2](img/conf_model2.png)
+![conf_model3](img/conf_model3.png)
 
 As seen in the table, our final decision is to take the SVM models for both only title prediction and also title and text prediction. The decision frontier is pretty clear in the following graphs.
+
+![svc1](img/svc1.png)
+![svc2](img/svc2.png)
 
 4.2. Clustering: Types of News 
 
