@@ -120,16 +120,23 @@ Based on that we will select the GloVe embeding for text and Doc2Vec for Titles 
 
 
 
-Machine Learning
+## 3.Machine Learning
 Once the natural Processing is realized, our Machine Learning work and analysis can start, as previously mentioned, the idea is first to realize a classification by selecting different variables and testing several models. Then we will use clustering to see if we can create groups of news and understand this clustering. This could be interesting to understand if we can detect populist news or just topic-related news. In this case, the results we are looking for are not as topic-related as our LDA model already does well, but rather trying to detect some tendencies of speech in news.
 Finally, the recommended systems has for objective to detect similarities between real and fake news and recommended in case of detecting that a new iis fake, the 2 most similar Real news, This is interesting as it not only destroys the propagation of Fake news but also directly changes the mindset of the reader and in a quick period it can introduce the real point of view in to the readers mind.
 
+
 4.1. Classification task: Fake News Detection
 
-In this classification task, our objective is to optimize the accuracy of the classification while minimizing the computational cost and time. It is, of course, interesting to say that the more interesting metrics in this case are the recall, as we want to detect all the Fake news, even if we classify as fake the True news.
+In this classification task, our objective is to optimize the accuracy of the classification while minimizing the computational cost and time. It is, of course, interesting to say that the more interesting metrics in this case are the recall, as we want to detect all the Fake news, even if we classify as fake the True news. Nevertheless, other metrics such as f1 score are also very relevant. That is why we will compare with the ROC-AUC score. All the scores will be displayed in a table at the end of the section.
 
 Our first model and benchmark is creating a Linear regression that uses the Length of the title in words or characters, for detecting the veracity of the news. Then, a model will be created using only the title and not the text. Finally, a third model will be built using the content of the text only. Exploring the results of those three models will enable us to combine the necessary variables to create the definitive model. Moreover, several Machine learning techniques such as Random Forest, SVM, and Neural Networks will be used.
 
+| Benchmark     | Title LR | Title RF | Title SVM | Title Neural | All LR | All RF | All SVM | All Neural |
+|---------------|----------|----------|-----------|--------------|--------|--------|---------|------------|
+| 0.89          | 0.89     | 0.92     | 0.94      | 0.96         | 0.94   | 0.95   | 0.96    | 0.98       |
+
+
+As seen in the table, our final decision is to take the SVM models for both only title prediction and also title and text prediction. The decision frontier is pretty clear in the following graphs.
 
 4.2. Clustering: Types of News 
 
@@ -153,10 +160,31 @@ Beyond classical models, we also explored word embeddings using Word2Vec and Glo
 
 
 
-Dashboard
+## 5. Dashboard
+In order visualize and interact with the machine learning models we have created, we developed an interactive dashboard using Dash. The dashboard is a platform where we have integrated the three core functionalities of the project: classification of news as REAL or FAKE, clustering analysis, and real news recommendations following the detection of fake news.
+
+**Dashboard Functionalities**
+
+The dashboard is structured around tabs that facilitate navigation through it:
+
+* Classify & Suggest: Users can input news articles (either full text or title only). When submitted, the dashboard classifies the article as FAKE or REAL using the optimized model. A visual horizontal bar indicates the prediction confidence (green for real news, red for fake news). Additionally, this functionality provides the top related articles within the same cluster, along with the most similar REAL news. This way we provide users some context in the prediction and verifying information.
+
+* Cluster Finder: Allows users to input a news article to identify the cluster it belongs to. This helps in understanding the broader context or sentiment associated with the news, such as political inclination or thematic grouping. Users receive immediate feedback regarding the cluster assignment, enabling exploration of patterns and trends.
+
+* True News by Topic: Presents news articles categorized by topics generated from the LDA analysis. This facilitates topic-driven exploration, providing users direct access to reliable articles organized under distinct themes identified by the LDA model.
+
+* Fake News by Topic: The same as the previous functionality but specifically for fake news articles by topic. This is particularly useful for observing patterns in misinformation and identifying recurring deceptive themes.
+
+* Explore by Cluster: Allows exploration of articles grouped by their respective clusters. The news are shown in a table where articles are labeled as REAL or FAKE, allowing detailed scrutiny of cluster compositions and the detection of underlying tendencies such as political bias or populist language.
 
 
 
 
-Conclusions
 
+
+
+## 6.Conclusions
+
+This project explored whether the authenticity of news articles can be predicted using only their textual content. We found that even simple features like title length or word count show strong signals, and that titles alone can offer reasonable predictive power. However, combining title and full-text embeddings (using GloVe and Doc2Vec) produced the most accurate results.
+Through classification, clustering, and topic modeling, we gained insights into the structure and patterns of real and fake news. Our KMeans clustering showed that stylistic and thematic differences align with veracity. Finally, the implementation of a recommendation system, based on clustering, that suggests reliable articles when fake ones are detected adds value for users.
+Overall, lightweight models based on minimal input can still be effective, making this approach suitable for scalable and efficient misinformation detection.
