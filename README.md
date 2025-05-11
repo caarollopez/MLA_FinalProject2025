@@ -228,7 +228,7 @@ The dashboard is structured around tabs that facilitate navigation through it:
 
 
 
-[Watch the video](img/Dashboard.mp4)
+[Watch the video](https://youtu.be/5UZiXaJ0hBU)
 
 Here is teh video link: https://youtu.be/5UZiXaJ0hBU
 
