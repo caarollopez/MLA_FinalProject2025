@@ -123,7 +123,8 @@ Initially, we built a dictionary from the processed text using the Gensim librar
 At the other end of the spectrum, we also filtered out rare words that occurred in fewer than five documents, which tend to introduce noise. With this refined vocabulary, we computed Bag-of-Words (BoW) vectors that represented the raw frequency of each term in each document. We also calculated TF-IDF (Term Frequency-Inverse Document Frequency) vectors, which adjust term frequencies based on how uniquely they are distributed across the corpus. These two classical representations were compared both visually and quantitatively. Nevertheless, we already know that these techniques are not widely used in diffraction of other techniques such as FastText, Doc2Vec and GloVe.
 
 In Figure 3 and in Figure 4, we can see the effect of erasing the more typical words.
-
+<img src="img/wordcloud1.png" width="300"/>
+<img src="img/wordcloud2.png" width="300"/>
 ![Figure3](img/worcloud1.png)  							 ![Figure3](img/wordcloud2.png)
 
 Figure3: WordCloud Before extracting common words			Figure4: WordCloud after extracting common words
