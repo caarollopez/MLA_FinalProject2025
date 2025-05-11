@@ -141,7 +141,7 @@ Then we computed LDA. In this case, we had to compare the titles approach and th
 <img src="img/coherence_metrics.png" width="500"/>                     	<img src="img/lda_bad.png" width="300"/>  
 
 
-    Figure 5: Coherence metrics							                                          Figure 6: LDA not selected
+    Figure 5: Coherence metrics					                            Figure 6: LDA not selected
 
 For titles we obtained the following topic representation  Figure 7, we can observe a more interesting separation between topics.
 
