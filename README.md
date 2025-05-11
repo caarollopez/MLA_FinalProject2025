@@ -19,8 +19,8 @@
 
 
 - Carolina López De La Madriz 100475095
-- Álvaro Martín Ruiz   
-- Emma Rodriguez Hervas 
+- Álvaro Martín Ruiz  100475318
+- Emma Rodriguez Hervas 100475225
 - Jaime Salafranca Pardo 100475216
 
 
@@ -220,7 +220,97 @@ This is interesting if we compare it to the the distribution of False and TRUE n
 In the second step of the analysis, we transformed the preprocessed texts into numerical vector representations to enable machine learning models to process and analyze them. We explored a wide range of vectorization strategies, starting with traditional statistical methods and progressing toward modern embedding-based models.
 
 Using both BoW and TF-IDF representations, we trained Latent Dirichlet Allocation (LDA) models to uncover latent thematic structures within the corpus. To determine the optimal number of topics, we employed coherence scoring using the c_v metric. We tested a range of topic counts, typically from 5 to 50, and selected the number of topics that maximized coherence. While LDA is traditionally applied using BoW vectors, we also experimented with training LDA using TF-IDF representations, as recent literature suggests this may improve the semantic clarity of topics in some cases.
+
 Beyond classical models, we also explored word embeddings using Word2Vec and GloVe, both of which generate dense vector representations for individual words. These embeddings were either pre-trained (e.g., on Google News or Common Crawl) or trained on our own corpus. To obtain document-level vectors, we tested multiple aggregation methods. The simplest was to average the word vectors of each document. However, we also applied TF-IDF weighted averaging, which places greater emphasis on informative words. In both cases, we applied Principal Component Analysis (PCA) or Singular Value Decomposition (SVD) to reduce the dimensionality of the resulting vectors and suppress noise. These steps aimed to produce document embeddings that preserved meaningful semantic structure while being computationally efficient.
+
+After vectorizing out corpus with GloVe, we tried several unsupervised algorithms to see which, if any, discover coherent grouping using three different datasets: only news' titles, only texts, or both, combined. First of all, we perform Elbow Method and Silhouette Analysis in order to find the optimal number of clusters. For the first method, all three variants show a steadily decreasing inertia as k grows from 2 to 10, with no sharp elbow, suggesting that there is no single dominant cluster count. However, the Silhouette score peak at k = 2 for the three datasets, but are low. 
+
+![ElbowMethod](img/elbow_method.png)
+![SilhouetteCluster](img/silhouette_clusters.png)
+
+In the t-SNE visualization we project each dataset at its best k onto two dimensions and the resulting scatterplots remain a dense cloud confirming the Silhouette analysis that the clusters are not strongly separated. 
+
+![TSNEcluster](img/tsne_clusters.png)
+
+The next step was trying the different clustering algorithms, using 2 clusters, to compare them and evaluate their ability to recover meaningful groupings:
+
+* K-Means: fast, centroid-based, uses similar spherical clusters
+* Spectral Clustering: uses graph Laplacian eigenvectors to handle non-convex shape
+* Gaussian Mixture Model: for soft assignaments and elliptical clusters
+* Agglomerative Clustering: creates a hierarchy by merging the closest pairs
+* HBDSCAN: density-based, finds cluster of varying density and robust to shape
+
+The metrics used to evaluate the performance of each method were the Adjusted Rand Index (ARI) and the Normalized Mutual Information (NMI) which compare our clusters to the real values of the labels (REAL vs FAKE). Te results shows that HBDSCAN does not obtain any useful cluster, and the other algorithms give results pretty close to zero, which means that the clusters are not related with the labels. 
+
+| Dataset              | Algorithm                   | Adjusted Rand Index | NMI     |
+|----------------------|-----------------------------|---------------------|---------|
+| Title Embeddings     | KMeans                      | 0.003363            | 0.003138|
+| Title Embeddings     | Spectral Clustering         | -0.000886           | 0.000251|
+| Title Embeddings     | Gaussian Mixture            | -0.000795           | 0.000439|
+| Title Embeddings     | Agglomerative Clustering    | -0.001338           | 0.000370|
+| Title Embeddings     | HDBSCAN                     | 0.000000            | 0.000000|
+| Text Embeddings      | KMeans                      | -0.000324           | 0.000424|
+| Text Embeddings      | Spectral Clustering         | 0.001300            | 0.001917|
+| Text Embeddings      | Gaussian Mixture            | 0.000158            | 0.000763|
+| Text Embeddings      | Agglomerative Clustering    | -0.000676           | 0.000043|
+| Text Embeddings      | HDBSCAN                     | 0.000000            | 0.000000|
+| Combined Embeddings  | KMeans                      | 0.000536            | 0.001821|
+| Combined Embeddings  | Spectral Clustering         | -0.000963           | 0.000002|
+| Combined Embeddings  | Gaussian Mixture            | 0.000536            | 0.001821|
+| Combined Embeddings  | Agglomerative Clustering    | 0.002296            | 0.001739|
+| Combined Embeddings  | HDBSCAN                     | 0.000000            | 0.000000|
+
+However, the clutering's goal was not to obtain a classifier of True or False nor grouping topics, it was a sentiment clustering, so the metrics are not necessary determinant for our model. 
+
+Next, we turn to Product2Vec, because it exhibited strong intra-class cohesiveness (average similarity of 0.79 for Fake and 0.77 for Real). It makes sense to evaluate whether these corpus-specific embeddings can capture the sentiment patterns needed to form coherent clusters. The best results are for the combined vectors and the titles, reducing the space to 2 components with PCA. With the Elbow Method we obtained that the best k was 2, and in order to obtain more specific groups we also use k = 5. 
+
+Titles dataset, k = 2:
+
+![clusters_k2_prod](img/cluster1.png)
+
+Combined dataset, k = 5: 
+
+![clusters_k5_prod](img/cluster2.png)
+
+Althought the results appear visually well sepatated, with notable borders even when they touch, quantitative evaluation shows more modest performance, suggesting showing that articles still overlap and the embeddings don’t capture clear sentiment boundaries because averaging Word2Vec on our small corpus blurs key differences
+
+| Dataset                  | k | Silhouette Score | Davies–Bouldin Index |
+|--------------------------|---|------------------|----------------------|
+| Titles                   | 2 | 0.433            | 0.926                |
+| Combined                 | 5 | 0.370            | 0.885                |
+
+We therefore move on to our strongest approach—GloVe embeddings with K-Means and PCA of 2 components, which delivers more reliable and interpretable clusters, being the simplest at the same time. Using the Elbow Method, we obtained that the best k is 5, and using the whole dataset, the best results have been for the Titles and the Combined, where we found the most clear groups as we can see in the following figures.
+
+![Final_cluster](img/cluster3.png)
+
+Below are three representative headlines from each of the 5 clusters of our final model. 
+
+**Cluster 0**  
+- **REAL**: WATCH: House Dem Has Had ENOUGH, Formally Starts Impeachment Proceedings Against Trump…  
+- **FAKE**: Chicago mayor seeks rebound with new budget, labor peace…  
+- **REAL**: Pro-Trump Group Is Now Using Pictures Of An Obama Rally To Make Trump Look Popular…
+
+**Cluster 1**  
+- **FAKE**: Merkel looks secure for now despite coalition chaos…  
+- **FAKE**: EU gives formal green light to new Brexit phase…  
+- **FAKE**: Colombia, ELN rebels agree temporary ceasefire starting Oct. 1…
+
+**Cluster 2**  
+- **FAKE**: More than 180,000 people, mostly Kurds, displaced by Iraqi-Kurdish conflict…  
+- **REAL**: Muslim Internment Flyers SHOCK Students Of UC San Diego With Stark Warning…  
+- **REAL**: “GUATEMALAN” MAN DIES After Falling Into WASTE GRINDER At Meat Plant…
+
+**Cluster 3**  
+- **FAKE**: Congress sends Obama bill on Zika drug development…  
+- **FAKE**: Ex-FBI Director Comey’s prepared testimony to Senate panel…  
+- **REAL**: Republican Committee Passes Bill That Would Prohibit Almost All Abortions In Florida…
+
+**Cluster 4**  
+- **REAL**: Fox News Host BEGS Republicans: Leave Trump ALOOOONE (VIDEO)…  
+- **REAL**: NJ DEM RUNNING FOR CONGRESS Claims His Opponent Is Like A “Rural Alabama Conservative”…  
+- **REAL**: Sean Hannity Tries To Bash CNN Reporter But It Immediately Backfires…
+
+Ultimately, GloVe + K-Means yielded the most consistent and interpretable clusters, providing a useful foundation for our downstream recommendation system.
 
 
 
