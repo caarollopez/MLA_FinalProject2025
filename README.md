@@ -140,7 +140,7 @@ Our first model and benchmark is creating a Linear regression that uses the Leng
 
 ![conf_model1](img/conf_model1.png)
 ![conf_model2](img/conf_model2.png)
-![conf_model3](img/lconf_model3.png)
+![conf_model3](img/conf_model3.png)
 
 As seen in the table, our final decision is to take the SVM models for both only title prediction and also title and text prediction. The decision frontier is pretty clear in the following graphs.
 
