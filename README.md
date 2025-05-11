@@ -123,9 +123,7 @@ Initially, we built a dictionary from the processed text using the Gensim librar
 At the other end of the spectrum, we also filtered out rare words that occurred in fewer than five documents, which tend to introduce noise. With this refined vocabulary, we computed Bag-of-Words (BoW) vectors that represented the raw frequency of each term in each document. We also calculated TF-IDF (Term Frequency-Inverse Document Frequency) vectors, which adjust term frequencies based on how uniquely they are distributed across the corpus. These two classical representations were compared both visually and quantitatively. Nevertheless, we already know that these techniques are not widely used in diffraction of other techniques such as FastText, Doc2Vec and GloVe.
 
 In Figure 3 and in Figure 4, we can see the effect of erasing the more typical words.
-<img src="img/wordcloud1.png" width="300"/>
-<img src="img/wordcloud2.png" width="300"/>
-![Figure3](img/worcloud1.png)  							 ![Figure3](img/wordcloud2.png)
+<img src="img/worcloud1.png" width="500"/>     <img src="img/wordcloud2.png" width="500"/>
 
 Figure3: WordCloud Before extracting common words			Figure4: WordCloud after extracting common words
 
@@ -133,48 +131,61 @@ That is why we implemented Doc2Vec. Doc2Vec is an extension of Word2Vec that gen
 
 Then we computed LDA. In this case, we had to compare the titles approach and the text approach. Comparing the Coherence metric for a number of topics and for a corpus made with BoW or TFIDF.  Obtaining the following results. Where we observe a very good coherence for 12 topics Figure 5. Nevertheless as seen in Figure 6, we must say that the topics have all a very little representativity while one topic had a big one. The eleven remaining topics where all very closed to each other. That is why we decided in this case to take 2 topics. Nevertheless for the titles the 12 topics where very interesting. 
 
-![coherence_metrics](img/coherence_metrics.png)                     		 ![lda_bad](img/lda_bad.png)
-Figure 5: Coherence metrics							Figure 6: LDA not selected
+<img src="img/coherence_metrics.png" width="500"/>                     	<img src="img/lda_bad.png" width="500"/>   
+Figure 5: Coherence metrics							                                          Figure 6: LDA not selected
 
 For titles we obtained the following topic representation  Figure 7, we can observe a more interesting separation between topics.
 
 
-![lda_title](img/lda_title.png)
+<img src="img/lda_title.png" width="500"/>  
 
 
 Moreover we also compared Non-Negative Factorization, NMF is a linear-algebra-based technique for topic modeling that decomposes the TF-IDF matrix into document-topic and topic-word matrices. Unlike LDA, NMF does not assume a generative model but can yield more coherent topics in some cases. We applied NMF using sklearn to extract interpretable topics from the TF-IDF matrix. We also found interesting topics. We used a BERT based sentence transformer, BERTopic combines transformer embeddings (like BERT) with clustering algorithms and topic reduction to create interpretable topics. It captures rich semantic and contextual relationships between words, outperforming traditional methods in many real-world settings. We applied BERTopic to analyze and visualize meaningful topics in the news corpus.
 
  ![vectorization_ploted](img/vectorization_ploted.png)
+ Figure 8: Visualization of the vectorisation techniques
 
 Comparing the GloVe and BERT models, we can see that the FAKE and REAL observations are separable, so this means that we can find a good model to approximate them.
 Finally, we compare using the cosine similarity between the news to understand which vectorization techniques to use for classification. We compute the similarities intra REAL and intra FAKE as well as between groups, trying to find a high REAL and FAKE intra similarity and a low extra similarity. That is why we decided to use doc2vec for text and GloVe for the title.
 
 ![vectorization](img/vectorization.png)
-
+Figure 9: Selection of vectorization technique
 
 ## 3.Machine Learning
+
 Once the natural Processing is realized, our Machine Learning work and analysis can start, as previously mentioned, the idea is first to realize a classification by selecting different variables and testing several models. Then we will use clustering to see if we can create groups of news and understand this clustering. This could be interesting to understand if we can detect populist news or just topic-related news. In this case, the results we are looking for are not as topic-related as our LDA model already does well, but rather trying to detect some tendencies of speech in news.
 Finally, the recommended systems has for objective to detect similarities between real and fake news and recommended in case of detecting that a new iis fake, the 2 most similar Real news, This is interesting as it not only destroys the propagation of Fake news but also directly changes the mindset of the reader and in a quick period it can introduce the real point of view in to the readers mind.
 
 
+
 4.1. Classification task: Fake News Detection
 
-In this classification task, our objective is to optimize the accuracy of the classification while minimizing the computational cost and time. It is, of course, interesting to say that the more interesting metrics in this case are the recall, as we want to detect all the Fake news, even if we classify as fake the True news. Nevertheless, other metrics such as f1 score are also very relevant. That is why we will compare with the ROC-AUC score. All the scores will be displayed in a table at the end of the section.
+In this classification task, our primary objective is to maximize the accuracy of fake news detection while keeping computational complexity and training time as low as possible. However, given the nature of the problem, certain evaluation metrics are more informative than overall accuracy. Specifically, recall is a key metric of interest, since our goal is to identify all instances of fake news, even at the cost of misclassifying some real news as fake. In other words, we prioritize minimizing false negatives, which would allow fake news to go undetected. Nevertheless, to balance between precision and recall, we will also consider the F1-score, and for a more comprehensive evaluation of classifier performance, we will compare models using the ROC-AUC score. All metrics will be summarized and presented in a comparative table at the end of this section.
 
-Our first model and benchmark is creating a Linear regression that uses the Length of the title in words or characters, for detecting the veracity of the news. Then, a model will be created using only the title and not the text. Finally, a third model will be built using the content of the text only. Exploring the results of those three models will enable us to combine the necessary variables to create the definitive model. Moreover, several Machine learning techniques such as Random Forest, SVM, and Neural Networks will be used.
+To establish a baseline, our first model is a simple linear regression classifier that uses basic structural features such as the length of the news title, measured both in terms of word count and character count. This model, although naive, provides a lightweight benchmark with minimal computational cost and allows us to assess whether superficial cues alone carry predictive signal.
+
+Next, we advance to models that leverage textual embeddings. First, we construct a classifier that uses only the title of the article, which is transformed into a vector representation using pre-trained word embeddings such as GloVe. This approach captures semantic relationships and contextual meaning within the title, offering richer information than simple length features. We then build a separate model using only the full body of the article, which provides more comprehensive context and detail. While this can significantly improve predictive power, it also increases computational demands due to the greater input size and complexity of the embedding space.
+
+Finally, to develop a more robust solution, we explore the combination of both title and content embeddings to train more sophisticated classifiers. We apply a range of machine learning algorithms, including Random Forests, which are well-suited for handling nonlinear relationships and feature importance; Support Vector Classifier (SVC), known for their strong performance on high-dimensional text data; and Neural Networks, which are particularly effective when working with dense embedding vectors and complex patterns.
+
+By systematically comparing these models, both in terms of performance metrics and resource requirements, we aim to identify the most effective and efficient strategy for fake news detection.
+
+<img src="img/vectorization.png" width="500"/>
+Figure10
 
 | Benchmark     | Title LR | Title RF | Title SVM | Title Neural | All LR | All RF | All SVM | All Neural |
 |---------------|----------|----------|-----------|--------------|--------|--------|---------|------------|
 | 0.89          | 0.89     | 0.92     | 0.94      | 0.96         | 0.94   | 0.95   | 0.96    | 0.98       |
 
-![conf_model1](img/conf_model1.png)
-![conf_model2](img/conf_model2.png)
-![conf_model3](img/conf_model3.png)
 
-As seen in the table, our final decision is to take the SVM models for both only title prediction and also title and text prediction. The decision frontier is pretty clear in the following graphs.
 
-![svc1](img/svc1.png)
-![svc2](img/svc2.png)
+  <img src="img/conf_model1.png" width="500"/>  <img src="img/conf_model2.png" width="500"/>   <img src="img/conf_model3.png" width="500"/> 
+
+                                Figure 10: Models tested for regression
+
+As seen in the table and computing times, our final decision is to take the SVM models for both only title prediction and also title and text prediction. The decision frontier is pretty clear in the following graphs.
+
+![svc1](img/svc1.png)           ![svc2](img/svc2.png)
 
 4.2. Clustering: Types of News 
 
