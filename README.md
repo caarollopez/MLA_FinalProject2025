@@ -93,7 +93,7 @@ We can observe in Figure 1 and Figure 2, the count of words per article and the 
 ![Figure1&2](img/Figure1&2.png)
 
 
-Figure 1: Distribution of Length		   Figure 2: Distribution of word count
+    Figure 1: Distribution of Length		   Figure 2: Distribution of word count
 
 
 The rest of the preprocessing of the data consists of only checking if all the news is completed, that is, not having NANs in the text and of title. In this case, as we have decided not to spend money and time scraping the data, our imported data does not have NAN values in any case and is nearly already preprocessed. It is also interesting to look simply at the most common words for both classes to get some interesting information for Natural Language Processing. It is that way we were able to discover a problem in the dataset. All the “ ‘ “ had been deleted. This is a big problem for solving contractions.
@@ -123,33 +123,49 @@ Initially, we built a dictionary from the processed text using the Gensim librar
 At the other end of the spectrum, we also filtered out rare words that occurred in fewer than five documents, which tend to introduce noise. With this refined vocabulary, we computed Bag-of-Words (BoW) vectors that represented the raw frequency of each term in each document. We also calculated TF-IDF (Term Frequency-Inverse Document Frequency) vectors, which adjust term frequencies based on how uniquely they are distributed across the corpus. These two classical representations were compared both visually and quantitatively. Nevertheless, we already know that these techniques are not widely used in diffraction of other techniques such as FastText, Doc2Vec and GloVe.
 
 In Figure 3 and in Figure 4, we can see the effect of erasing the more typical words.
+
+
+
 <img src="img/worcloud1.png" width="500"/>     <img src="img/wordcloud2.png" width="500"/>
 
-Figure3: WordCloud Before extracting common words			Figure4: WordCloud after extracting common words
+
+
+    Figure 3: WordCloud Before extracting common words			Figure 4: WordCloud after extracting common words
 
 That is why we implemented Doc2Vec. Doc2Vec is an extension of Word2Vec that generates dense, fixed-length vectors representing entire documents. It considers word context and document-level semantics by training embeddings jointly with document identifiers. We trained separate models for titles and texts using Gensim's Doc2Vec, and inferred document embeddings, which we store in doc2vec_text_df and doc2vec_title_df. We also used a pretrained GloVe model, which is a pretrained word embedding model that captures semantic similarity by factorizing a word co-occurrence matrix. We average the GloVe vectors of words in each document to obtain a dense representation. We use the glove-wiki-gigaword-50 pretrained model from Gensim’s API to vectorize both titles and texts. 
 
 Then we computed LDA. In this case, we had to compare the titles approach and the text approach. Comparing the Coherence metric for a number of topics and for a corpus made with BoW or TFIDF.  Obtaining the following results. Where we observe a very good coherence for 12 topics Figure 5. Nevertheless as seen in Figure 6, we must say that the topics have all a very little representativity while one topic had a big one. The eleven remaining topics where all very closed to each other. That is why we decided in this case to take 2 topics. Nevertheless for the titles the 12 topics where very interesting. 
 
-<img src="img/coherence_metrics.png" width="500"/>                     	<img src="img/lda_bad.png" width="500"/>   
-Figure 5: Coherence metrics							                                          Figure 6: LDA not selected
+
+
+<img src="img/coherence_metrics.png" width="500"/>                     	<img src="img/lda_bad.png" width="300"/>  
+
+
+    Figure 5: Coherence metrics							                                          Figure 6: LDA not selected
 
 For titles we obtained the following topic representation  Figure 7, we can observe a more interesting separation between topics.
 
 
-<img src="img/lda_title.png" width="500"/>  
+  <img src="img/lda_title.png" width="500"/>  
+
+       Figure 7: Final LDA for the titles
 
 
+       
 Moreover we also compared Non-Negative Factorization, NMF is a linear-algebra-based technique for topic modeling that decomposes the TF-IDF matrix into document-topic and topic-word matrices. Unlike LDA, NMF does not assume a generative model but can yield more coherent topics in some cases. We applied NMF using sklearn to extract interpretable topics from the TF-IDF matrix. We also found interesting topics. We used a BERT based sentence transformer, BERTopic combines transformer embeddings (like BERT) with clustering algorithms and topic reduction to create interpretable topics. It captures rich semantic and contextual relationships between words, outperforming traditional methods in many real-world settings. We applied BERTopic to analyze and visualize meaningful topics in the news corpus.
 
  ![vectorization_ploted](img/vectorization_ploted.png)
- Figure 8: Visualization of the vectorisation techniques
+
+ 
+     Figure 8: Visualization of the vectorisation techniques
 
 Comparing the GloVe and BERT models, we can see that the FAKE and REAL observations are separable, so this means that we can find a good model to approximate them.
 Finally, we compare using the cosine similarity between the news to understand which vectorization techniques to use for classification. We compute the similarities intra REAL and intra FAKE as well as between groups, trying to find a high REAL and FAKE intra similarity and a low extra similarity. That is why we decided to use doc2vec for text and GloVe for the title.
 
 ![vectorization](img/vectorization.png)
-Figure 9: Selection of vectorization technique
+
+
+       Figure 9: Selection of vectorization technique
 
 ## 3.Machine Learning
 
@@ -158,7 +174,7 @@ Finally, the recommended systems has for objective to detect similarities betwee
 
 
 
-4.1. Classification task: Fake News Detection
+#### 4.1. Classification task: Fake News Detection
 
 In this classification task, our primary objective is to maximize the accuracy of fake news detection while keeping computational complexity and training time as low as possible. However, given the nature of the problem, certain evaluation metrics are more informative than overall accuracy. Specifically, recall is a key metric of interest, since our goal is to identify all instances of fake news, even at the cost of misclassifying some real news as fake. In other words, we prioritize minimizing false negatives, which would allow fake news to go undetected. Nevertheless, to balance between precision and recall, we will also consider the F1-score, and for a more comprehensive evaluation of classifier performance, we will compare models using the ROC-AUC score. All metrics will be summarized and presented in a comparative table at the end of this section.
 
@@ -187,7 +203,7 @@ As seen in the table and computing times, our final decision is to take the SVM 
 
              Figure 11: SVC models visualization
 
-4.2. Clustering: Types of News 
+##### 4.2. Clustering: Types of News 
 
 This clustering task is an exploration idea in which we want to understand is we can detect some tendencies in the news, a clustering in function of the topic is not the main objective for us, but more a sentiment clustering which could be able to detect Right wing, Neutral, or Left Wing influenced news. This could also be interesting if found, as for a reader it could be interesting to have recommended news similar to the one that he is reading, but from the opposite political spectrum.
 
@@ -230,7 +246,7 @@ The dashboard is structured around tabs that facilitate navigation through it:
 
 [Watch the video](https://youtu.be/5UZiXaJ0hBU)
 
-Here is teh video link: https://youtu.be/5UZiXaJ0hBU
+Here is the video link: https://youtu.be/5UZiXaJ0hBU
 
 ## 6.Conclusions
 
