@@ -1,6 +1,6 @@
 import nbformat
 
-notebook_path = "Fake_News_Detection_bis.ipynb"  # Cambia este nombre
+notebook_path = "alvaro_scratches/Fake_News_Detection_DashBoard_04_05_2025.ipynb"  # Cambia este nombre
 
 nb = nbformat.read(open(notebook_path, "r", encoding="utf-8"), as_version=4)
 
