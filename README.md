@@ -170,8 +170,6 @@ Finally, to develop a more robust solution, we explore the combination of both t
 
 By systematically comparing these models, both in terms of performance metrics and resource requirements, we aim to identify the most effective and efficient strategy for fake news detection.
 
-<img src="img/vectorization.png" width="500"/>
-Figure10
 
 | Benchmark     | Title LR | Title RF | Title SVM | Title Neural | All LR | All RF | All SVM | All Neural |
 |---------------|----------|----------|-----------|--------------|--------|--------|---------|------------|
@@ -179,13 +177,15 @@ Figure10
 
 
 
-  <img src="img/conf_model1.png" width="500"/>  <img src="img/conf_model2.png" width="500"/>   <img src="img/conf_model3.png" width="500"/> 
+  <img src="img/conf_model1.png" width="250"/>  <img src="img/conf_model2.png" width="250"/>   <img src="img/conf_model3.png" width="250"/> 
 
                                 Figure 10: Models tested for regression
 
 As seen in the table and computing times, our final decision is to take the SVM models for both only title prediction and also title and text prediction. The decision frontier is pretty clear in the following graphs.
 
 ![svc1](img/svc1.png)           ![svc2](img/svc2.png)
+
+             Figure 11: SVC models visualization
 
 4.2. Clustering: Types of News 
 
